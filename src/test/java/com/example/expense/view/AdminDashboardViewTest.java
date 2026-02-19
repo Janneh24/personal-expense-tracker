@@ -103,16 +103,24 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
         // We can use a custom robot or just verify the button click and dialog
         // appearance.
         window.button("resetPassButton").click();
-        org.assertj.swing.timing.Pause.pause(500);
-        window.robot().waitForIdle();
-        window.optionPane().requireMessage("Enter new password:");
+        window.optionPane(org.assertj.swing.timing.Timeout.timeout(5000)).requireMessage("Enter new password:");
         window.optionPane().textBox().enterText("secret");
         window.optionPane().okButton().click();
-        org.assertj.swing.timing.Pause.pause(500);
-        window.robot().waitForIdle();
 
-        verify(userService).resetPassword(2L, "secret");
-        window.optionPane().requireMessage("Password reset successfully");
+        verify(userService,
+                org.assertj.swing.timing.Pause.pause(new org.assertj.swing.timing.Condition("userService called") {
+                    @Override
+                    public boolean test() {
+                        try {
+                            verify(userService).resetPassword(2L, "secret");
+                            return true;
+                        } catch (Throwable t) {
+                            return false;
+                        }
+                    }
+                }, 5000)).resetPassword(2L, "secret");
+
+        window.optionPane(org.assertj.swing.timing.Timeout.timeout(5000)).requireMessage("Password reset successfully");
         window.optionPane().okButton().click();
     }
 

@@ -90,14 +90,24 @@ public class AddExpenseViewTest extends AssertJSwingJUnitTestCase {
         window.comboBox("category").click();
         window.comboBox("category").selectAllText();
         window.comboBox("category").enterText("Travel");
+        window.robot().pressAndReleaseKey(java.awt.event.KeyEvent.VK_ENTER);
+        window.robot().waitForIdle();
 
         when(categoryService.saveCategory("Travel")).thenReturn(new Category("Travel"));
 
         window.button("saveButton").click();
-        org.assertj.swing.timing.Pause.pause(1000);
-        window.robot().waitForIdle();
+        org.assertj.swing.timing.Pause.pause(new org.assertj.swing.timing.Condition("category saved") {
+            @Override
+            public boolean test() {
+                try {
+                    verify(categoryService).saveCategory("Travel");
+                    return true;
+                } catch (Throwable t) {
+                    return false;
+                }
+            }
+        }, 5000);
 
-        verify(categoryService).saveCategory("Travel");
         verify(expenseService).addExpense(any());
         verify(onSaveCallback).run();
     }
