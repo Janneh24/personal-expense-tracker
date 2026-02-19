@@ -1,0 +1,43 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Install xvfb
+      run: sudo apt-get update && sudo apt-get install -y xvfb
+
+    - name: Build with Maven
+      run: xvfb-run mvn -B verify --file pom.xml
+
+    - name: Mutation Testing
+      run: xvfb-run mvn pitest:mutationCoverage
+
+    - name: Generate Coverage Report
+      run: xvfb-run mvn jacoco:report
+
+    - name: Upload to Coveralls
+      run: mvn coveralls:report -DrepoToken=${{ secrets.COVERALLS_REPO_TOKEN }}
+      if: github.event_name != 'pull_request'
+
+    - name: SonarCloud Analysis
+      run: mvn sonar:sonar -Dsonar.projectKey=Janneh24_personal-expense-tracker -Dsonar.organization=janneh24 -Dsonar.host.url=https://sonarcloud.io
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
