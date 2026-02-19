@@ -166,6 +166,7 @@ public class AdminDashboardView extends JFrame {
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
+        fileMenu.setName("fileMenu");
         JMenuItem logoutItem = new JMenuItem("Logout");
         logoutItem.setName("logoutItem");
         logoutItem.addActionListener(e -> {
@@ -175,12 +176,14 @@ public class AdminDashboardView extends JFrame {
         fileMenu.add(logoutItem);
 
         JMenu manageMenu = new JMenu("Manage");
+        manageMenu.setName("manageMenu");
         JMenuItem categoryItem = new JMenuItem("System Categories");
         categoryItem.setName("categoryItem");
         categoryItem.addActionListener(e -> new CategoryManagementView(this, categoryService).setVisible(true));
         manageMenu.add(categoryItem);
 
         JMenu analyticsMenu = new JMenu("Analytics");
+        analyticsMenu.setName("analyticsMenu");
         JMenuItem insightItem = new JMenuItem("Platform Insights");
         insightItem.setName("insightItem");
         insightItem.addActionListener(

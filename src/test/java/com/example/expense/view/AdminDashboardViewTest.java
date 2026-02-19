@@ -107,18 +107,7 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
         window.optionPane().textBox().enterText("secret");
         window.optionPane().okButton().click();
 
-        verify(userService,
-                org.assertj.swing.timing.Pause.pause(new org.assertj.swing.timing.Condition("userService called") {
-                    @Override
-                    public boolean test() {
-                        try {
-                            verify(userService).resetPassword(2L, "secret");
-                            return true;
-                        } catch (Throwable t) {
-                            return false;
-                        }
-                    }
-                }, 5000)).resetPassword(2L, "secret");
+        verify(userService, timeout(5000)).resetPassword(2L, "secret");
 
         window.optionPane(org.assertj.swing.timing.Timeout.timeout(5000)).requireMessage("Password reset successfully");
         window.optionPane().okButton().click();
@@ -126,7 +115,8 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void shouldLogout() {
-        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("File")).click();
+        window.robot().waitForIdle();
+        window.menuItem("fileMenu").click();
         window.menuItem("logoutItem").click();
         org.assertj.swing.timing.Pause.pause(500);
         assertThat(execute(() -> window.target().isVisible())).isFalse();
@@ -135,7 +125,7 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
     @Test
     public void shouldOpenCategoryManagement() {
         window.robot().waitForIdle();
-        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("Manage")).click();
+        window.menuItem("manageMenu").click();
         window.menuItem("categoryItem").click();
         org.assertj.swing.fixture.DialogFixture diag = window.dialog(
                 org.assertj.swing.core.matcher.DialogMatcher.withTitle("Category Management"),
@@ -147,7 +137,7 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
     @Test
     public void shouldOpenPlatformInsights() {
         window.robot().waitForIdle();
-        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("Analytics")).click();
+        window.menuItem("analyticsMenu").click();
         window.menuItem("insightItem").click();
         org.assertj.swing.fixture.DialogFixture diag = window.dialog(
                 org.assertj.swing.core.matcher.DialogMatcher.withTitle("Platform Global Insights"),
