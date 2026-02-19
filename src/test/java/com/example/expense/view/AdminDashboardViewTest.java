@@ -126,13 +126,16 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
 
     @Test
     public void shouldLogout() {
+        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("File")).click();
         window.menuItem("logoutItem").click();
-        assertThat(window.target().isVisible()).isFalse();
+        org.assertj.swing.timing.Pause.pause(500);
+        assertThat(execute(() -> window.target().isVisible())).isFalse();
     }
 
     @Test
     public void shouldOpenCategoryManagement() {
         window.robot().waitForIdle();
+        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("Manage")).click();
         window.menuItem("categoryItem").click();
         org.assertj.swing.fixture.DialogFixture diag = window.dialog(
                 org.assertj.swing.core.matcher.DialogMatcher.withTitle("Category Management"),
@@ -144,6 +147,7 @@ public class AdminDashboardViewTest extends AssertJSwingJUnitTestCase {
     @Test
     public void shouldOpenPlatformInsights() {
         window.robot().waitForIdle();
+        window.menu(org.assertj.swing.core.matcher.JButtonMatcher.withText("Analytics")).click();
         window.menuItem("insightItem").click();
         org.assertj.swing.fixture.DialogFixture diag = window.dialog(
                 org.assertj.swing.core.matcher.DialogMatcher.withTitle("Platform Global Insights"),
